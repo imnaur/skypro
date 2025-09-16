@@ -1,4 +1,5 @@
 def mask_account_card(card_number: str) -> str:
+    """"Функция, которая маскирует данные карты или счета."""
     if "Счет" in card_number:
         return "Счет " + "**" + card_number[-4:]
     elif "Maestro" or "Mastercard" or "Visa" in card_number:
@@ -11,9 +12,8 @@ def mask_account_card(card_number: str) -> str:
     return card_number[:-16] + card_number_result
 
 
-
-
 def get_date(date_info: str) -> str:
+    """Функция, которая возвращает правильный формат даты."""
     changed_date = date_info[:10]
     correct_date = changed_date.replace("-", "")
     day_date = correct_date[-2:]
