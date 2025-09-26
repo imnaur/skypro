@@ -1,5 +1,7 @@
 def filter_by_state(list_of_states: list[dict], state: str = "EXECUTED") -> list[dict]:
     """Функция, которая фильтрует список словарей по значению ключа 'state'."""
+    if not state:
+        raise ValueError("Отсутствует статус")
     new_states_list = []
     for item in list_of_states:
         if item.get("state") == state:
@@ -8,6 +10,6 @@ def filter_by_state(list_of_states: list[dict], state: str = "EXECUTED") -> list
 
 
 def sort_by_date(data: list[dict], reverse: bool = True) -> list[dict]:
-    """Функиця, которая сортирует список словарей по ключу 'date'."""
+    """Функция, которая сортирует список словарей по ключу 'date'."""
     sorted_date = sorted(data, key=lambda x: x["date"], reverse=reverse)
     return sorted_date
