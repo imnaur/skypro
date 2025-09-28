@@ -50,6 +50,5 @@ def test_get_date_invalid(inp: str) -> None:
         ("2022.06.03", "03.06.2022"),
     ],
 )
-def test_get_date_valid(inp: str, expected: str) -> None\
-        :
+def test_get_date_valid(inp: str, expected: str) -> None:
     assert get_date(inp) == expected

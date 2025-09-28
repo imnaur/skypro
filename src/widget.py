@@ -1,4 +1,5 @@
-from src.masks import get_mask_card_number, get_mask_account
+from src.masks import get_mask_account, get_mask_card_number
+
 
 def mask_account_card(card_number: str) -> str:
     """Определяет, карта это или счет, и маскирует с сохранением текста."""
@@ -8,7 +9,6 @@ def mask_account_card(card_number: str) -> str:
     elif len(digits) == 20:
         return card_number[:-20] + get_mask_account(digits)
     raise ValueError("Введите корректный номер карты: 16 цифр или счета: 20 цифр")
-
 
 
 def get_date(date_info: str) -> str:

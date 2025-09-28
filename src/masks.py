@@ -6,7 +6,7 @@ def get_mask_card_number(card_number: str) -> str:
     stars_num = "*" * 6
     end_num = card_number[-4:]
     masked_num = start_num + stars_num + end_num
-    return " ".join(masked_num[i: i + 4] for i in range(0, len(masked_num), 4))
+    return " ".join(masked_num[i : i + 4] for i in range(0, len(masked_num), 4))
 
 
 def get_mask_account(account_number: str) -> str:
@@ -15,4 +15,3 @@ def get_mask_account(account_number: str) -> str:
         raise ValueError("Неправильный номер счета")
     masked_account = account_number[-4:]
     return "**" + masked_account
-
