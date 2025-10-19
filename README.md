@@ -26,5 +26,5 @@ poetry install
 
 ## Тестирование:
 
-Были протестированы все модули при помощи assert, pytest, pytest.mark.parametrize.
-Была создана фикстура путем применения pytest.fixture
+Были протестированы все модули и функции при помощи assert, pytest, pytest.mark.parametrize.
+Была создана фикстура путем применения pytest.fixture. Обновление файла conftest.
