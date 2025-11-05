@@ -5,6 +5,7 @@ def log(filename=None):
     """
     Декоратор log. Логирует начало и конец выполнения функции, а также её результат или ошибку.
     """
+
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
