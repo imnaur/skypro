@@ -1,7 +1,6 @@
 import logging
 import os
 
-
 # Логер для функции read_json()
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 log_folder = os.path.join(PROJECT_ROOT, "logs")
