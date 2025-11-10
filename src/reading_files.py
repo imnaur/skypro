@@ -17,8 +17,8 @@ with open(save_path, "wb") as file:
 
 def reading_csv(save_path: str) -> list[dict]:
     """Функция для считывания финансовых операций из CSV"""
-    df_csv = pd.read_csv(save_path)
-    df_csv_list = df_csv.to_dict("records")
+    df_csv = pd.read_csv(save_path, sep=";")
+    df_csv_list = df_csv.to_dict(orient="records")
     return df_csv_list
 
 
