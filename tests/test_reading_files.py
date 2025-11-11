@@ -1,4 +1,5 @@
 from unittest.mock import patch
+
 import pandas as pd
 
 from src.reading_files import reading_csv, reading_excel
@@ -8,9 +9,9 @@ from src.reading_files import reading_csv, reading_excel
 def test_reading_csv(mock_read_csv):
     """Тест проверяет работоспособность функции чтения CSV файла."""
     mock_read_csv.return_value = pd.DataFrame([{"id": 55446, "transaction": 1766.99, "currency": "USD"}])
-    result_csv = reading_csv("fake_patch.csv")
+    result_csv = reading_csv("fake_patch.csv", sep=";")
     assert result_csv == [{"id": 55446, "transaction": 1766.99, "currency": "USD"}]
-    mock_read_csv.assert_called_once_with("fake_patch.csv")
+    mock_read_csv.assert_called_once_with("fake_patch.csv", sep=";")
 
 
 @patch("pandas.read_excel")

@@ -15,9 +15,9 @@ with open(save_path, "wb") as file:
     file.write(response.content)
 
 
-def reading_csv(save_path: str) -> list[dict]:
+def reading_csv(save_path: str, sep=";") -> list[dict]:
     """Функция для считывания финансовых операций из CSV"""
-    df_csv = pd.read_csv(save_path, sep=";")
+    df_csv = pd.read_csv(save_path, sep=sep)
     df_csv_list = df_csv.to_dict(orient="records")
     return df_csv_list
 
@@ -38,5 +38,5 @@ def reading_excel(file_path: str) -> list[dict]:
     return df_list
 
 
-#excel_result = reading_excel(file_path)
+# excel_result = reading_excel(file_path)
 # print(excel_result[:3])
