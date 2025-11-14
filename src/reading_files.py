@@ -22,8 +22,8 @@ def reading_csv(save_path: str, sep=";") -> list[dict]:
     return df_csv_list
 
 
-csv_result = reading_csv(save_path)
-print(csv_result[:3])
+# csv_result = reading_csv(save_path)
+# print(csv_result[:3])
 
 # EXCEL FILE
 # Скачивание EXCEL файла с URL, сохраняется в загрузках
@@ -38,5 +38,5 @@ def reading_excel(file_path: str) -> list[dict]:
     return df_list
 
 
-# excel_result = reading_excel(file_path)
-# print(excel_result[:3])
+excel_result = reading_excel(file_path)
+print(excel_result[:3])
