@@ -22,12 +22,12 @@ def reading_csv(save_path: str, sep=";") -> list[dict]:
     return df_csv_list
 
 
-# csv_result = reading_csv(save_path)
-# print(csv_result[:3])
+csv_result = reading_csv(save_path)
+print(csv_result[:3])
 
-# EXCEL FILE
-# Скачивание EXCEL файла с URL, сохраняется в загрузках
-# Путь к файлу в загрузках
+#EXCEL FILE
+#Скачивание EXCEL файла с URL, сохраняется в загрузках
+#Путь к файлу в загрузках
 file_path = "/Users/imnaur/Downloads/transactions_excel.xlsx"
 
 

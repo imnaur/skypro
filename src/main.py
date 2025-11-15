@@ -3,19 +3,31 @@ import os
 
 import pandas as pd
 
+from src.masks import get_mask_card_number, get_mask_account
+from src.search_processing import search_process
+
 
 def main():
     """Главная функция, отвечающая за основную логику виджета."""
 
     def mask_number(number: str) -> str:
         """Маскирует номер карты или счета."""
-        if "Счет" in number:
-            return "Счет **" + number[-4:]
-        else:
-            digits = [c for c in number if c.isdigit()]
-            if len(digits) >= 16:
-                return number[: len(number) - 10] + "** **** " + "".join(digits[-4:])
-            return number
+        if not number:
+            return ""
+        number = number.strip()
+        digits = "".join(ch for ch in number if ch.isdigit())
+        if "счет" in number.lower() and len(digits) == 20:
+            try:
+                return get_mask_account(digits)
+            except ValueError:
+                return number
+        if len(digits) >= 16:
+            digits_card = digits[-16:]
+            try:
+                return get_mask_card_number(digits_card)
+            except ValueError:
+                return number
+
 
     def format_transaction(row):
         """Функция выводит заданный по ТЗ формат ответов."""
@@ -28,14 +40,14 @@ def main():
         from_acc = mask_number(str(row.get("from", ""))) if pd.notnull(row.get("from", "")) else ""
         to_acc = mask_number(str(row.get("to", ""))) if pd.notnull(row.get("to", "")) else ""
 
-        s = f"{date_formated} {row.get("description", "")}\n"
+        s = f"{date_formated} {row.get('description', '')}\n"
         if from_acc and to_acc:
             s += f"{from_acc} -> {to_acc}\n"
         elif from_acc:
             s += f"{from_acc}\n"
         elif to_acc:
             s += f"{to_acc}\n"
-        s += f"Сумма: {row.get("amount", "")} {row.get("currency_code", "")}\n"
+        s += f"Сумма: {row.get('amount', '')} {row.get('currency_code', '')}\n"
         return s
 
     print("\nПривет! Добро пожаловать в программу работы с банковскими транзакциями.")
@@ -94,11 +106,12 @@ def main():
             .upper()
         )
         if filter_answer in valid_status:
-            df = df[df[status_col] == filter_answer]
-            print(f'Операции отфильтрованы по статусу "{filter_answer}".\n')
+            df = df[df["state"] == filter_answer]
+            print(f"Фильтр по статусу применен: {filter_answer}")
             break
         else:
-            print(f'Статус операции "{filter_answer}" недоступен.\n')
+            print("Неверный статус. Попробуйте еще раз.")
+
     if "date" in df.columns:
         order_answer = input("Отсортировать операции по дате? Да/Нет\n").strip().lower()
         if order_answer == "да":
@@ -106,8 +119,8 @@ def main():
             ascending = True if order_type == "возрастанию" else False
             df = df.sort_values(by="date", ascending=ascending)
             print("Отсортировано.")
-        else:
-            print("Нет столбца даты, пропущен фильтр.")
+    else:
+        print("Нет столбца даты, пропущен фильтр.")
 
     currency_col = "currency_code" if "currency_code" in df.columns else None
     rub_only = input("Выводить только рублевые транзакции? Да/Нет\n").strip().lower()
@@ -121,7 +134,7 @@ def main():
         )
         if word_filter == "да":
             keyword = input("Введите слово для фильтрации: ")
-            df = df[df["description"].str.lower().str.contains(keyword)]
+            df = pd.DataFrame(search_process(df.to_dict(orient="records"), keyword))
             print(f"Применяется фильтр со словом: {keyword}\n")
 
     print(" Распечатываю итоговый список транзакций...")

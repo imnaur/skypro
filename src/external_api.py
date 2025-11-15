@@ -11,7 +11,7 @@ api_key = os.getenv("API_KEY")
 
 
 def currency_transactions(transaction: dict) -> float:
-    "Функция принимает транзакции и возвращает сумму в рублях."
+    """Функция принимает транзакции и возвращает сумму в рублях."""
     if transaction is None:
         print("Пропущена транзакция! Не полная информация!", transaction)
         return 0.0
