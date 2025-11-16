@@ -22,21 +22,20 @@ def reading_csv(save_path: str, sep=";") -> list[dict]:
     return df_csv_list
 
 
-csv_result = reading_csv(save_path)
-print(csv_result[:3])
-
 #EXCEL FILE
-#Скачивание EXCEL файла с URL, сохраняется в загрузках
-#Путь к файлу в загрузках
-file_path = "/Users/imnaur/Downloads/transactions_excel.xlsx"
+url_excel = "https://raw.githubusercontent.com/skypro-008/transactions/refs/heads/main/transactions_excel.xlsx"
+save_path = "/Users/imnaur/PycharmProjects/Skypro/data/transactions_excel.xlsx"
+os.makedirs(os.path.dirname(save_path), exist_ok=True)
+r = requests.get(url_excel)
+with open(save_path, "wb") as f:
+    f.write(r.content)
 
 
 def reading_excel(file_path: str) -> list[dict]:
     """Функция для считывания финансовых операций из Excel"""
     df = pd.read_excel(file_path, engine="openpyxl")
-    df_list = df.to_dict(orient="records")
-    return df_list
+    return df.to_dict(orient="records")
 
 
-excel_result = reading_excel(file_path)
-print(excel_result[:3])
+
+

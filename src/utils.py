@@ -56,18 +56,12 @@ def read_json():
         json_logger.error("Файл пуст - нет транзакций!")
         return []
 
-    with open(save_path, "r", encoding="utf-8") as f:
-        data = json.load(f)
-    if not data:
-        print("No transactions found")
-        json_logger.warning("Ошибка чтения файла!")
-        return []
     new_transactions_list = []
     for transaction in data:
         if not transaction.get("operationAmount"):
             json_logger.warning("Пропущен файл - недостаточно информации!")
             continue
-        new_transactions_list.append(transaction["operationAmount"])
+        new_transactions_list.append(transaction)
     json_logger.info("Конец процесса чтения JSON файла")
     return new_transactions_list
 

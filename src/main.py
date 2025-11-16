@@ -1,55 +1,15 @@
-import json
 import os
-
 import pandas as pd
-
+from src.widget import get_date
 from src.masks import get_mask_card_number, get_mask_account
 from src.search_processing import search_process
+from src.utils import read_json
+from src.reading_files import reading_csv, reading_excel
+from src.processing import filter_by_state, sort_by_date, format_transaction
 
 
 def main():
     """Главная функция, отвечающая за основную логику виджета."""
-
-    def mask_number(number: str) -> str:
-        """Маскирует номер карты или счета."""
-        if not number:
-            return ""
-        number = number.strip()
-        digits = "".join(ch for ch in number if ch.isdigit())
-        if "счет" in number.lower() and len(digits) == 20:
-            try:
-                return get_mask_account(digits)
-            except ValueError:
-                return number
-        if len(digits) >= 16:
-            digits_card = digits[-16:]
-            try:
-                return get_mask_card_number(digits_card)
-            except ValueError:
-                return number
-
-
-    def format_transaction(row):
-        """Функция выводит заданный по ТЗ формат ответов."""
-        data_str = row.get("date", "")
-        try:
-            date_formated = pd.to_datetime(data_str).strftime("%d.%m.%Y")
-        except ValueError:
-            date_formated = data_str
-
-        from_acc = mask_number(str(row.get("from", ""))) if pd.notnull(row.get("from", "")) else ""
-        to_acc = mask_number(str(row.get("to", ""))) if pd.notnull(row.get("to", "")) else ""
-
-        s = f"{date_formated} {row.get('description', '')}\n"
-        if from_acc and to_acc:
-            s += f"{from_acc} -> {to_acc}\n"
-        elif from_acc:
-            s += f"{from_acc}\n"
-        elif to_acc:
-            s += f"{to_acc}\n"
-        s += f"Сумма: {row.get('amount', '')} {row.get('currency_code', '')}\n"
-        return s
-
     print("\nПривет! Добро пожаловать в программу работы с банковскими транзакциями.")
     print("Выберите необходимый пункт меню: \n")
     print("Получить информацию о транзакциях из:\n1. JSON-файла\n2. CSV-файла\n3. XLSX-файла")
@@ -64,61 +24,43 @@ def main():
     if client_answer == "1":
         file_path = os.path.join(DATA_DIR, "operations.json")
         print("Для обработки выбран JSON-файл.")
-        try:
-            with open(file_path, "r", encoding="utf-8") as file:
-                data = json.load(file)
-            df = pd.json_normalize(data)
-        except FileNotFoundError:
-            print("Файл не найден.")
-            return
+        dict_oper = read_json()
+        df = pd.DataFrame(dict_oper)
 
     elif client_answer == "2":
         file_path = os.path.join(DATA_DIR, "transactions.csv")
         print("Для обработки выбран CSV-файл.")
-        try:
-            df = pd.read_csv(file_path, sep=";")
-        except FileNotFoundError:
-            print("Файл не найден.")
-            return
+        dict_oper = reading_csv(file_path)
+        df = pd.DataFrame(dict_oper)
 
     elif client_answer == "3":
         file_path = os.path.join(DATA_DIR, "transactions_excel.xlsx")
         print("Для обработки выбран XLSX-файл.")
-        try:
-            df = pd.read_excel(file_path, engine="openpyxl")
-        except Exception:
-            print("Файл не настоящий Excel, читаем как CSV.")
-            df = pd.read_csv(file_path, sep=";")
+        dict_oper = reading_excel(file_path)
+        df = pd.DataFrame(dict_oper)
 
     else:
         print("Неверный пункт меню. Программа завершена.")
-        return
+        return None
 
-    status_col = "state"
-    valid_status = ["EXECUTED", "CANCELED", "PENDING"]
     while True:
-        filter_answer = (
-            input(
-                "Введите статус, по которому необходимо выполнить фильтрацию.\n"
-                "Доступные для фильтровки статусы: EXECUTED, CANCELED, PENDING\n"
-            )
-            .strip()
-            .upper()
-        )
-        if filter_answer in valid_status:
-            df = df[df["state"] == filter_answer]
-            print(f"Фильтр по статусу применен: {filter_answer}")
+        filter_answer = input(
+            "Введите статус, по которому необходимо выполнить фильтрацию.\n"
+            "Доступные статусы: EXECUTED, CANCELED, PENDING\n"
+        ).strip().upper()
+
+        if filter_answer in ["EXECUTED", "CANCELED", "PENDING"]:
+            df = pd.DataFrame(filter_by_state(df.to_dict(orient="records"), filter_answer))
             break
         else:
             print("Неверный статус. Попробуйте еще раз.")
 
-    if "date" in df.columns:
+    if isinstance(df, pd.DataFrame) and "date" in df.columns:
         order_answer = input("Отсортировать операции по дате? Да/Нет\n").strip().lower()
         if order_answer == "да":
             order_type = input("По возрастанию или убыванию?\n").strip().lower()
-            ascending = True if order_type == "возрастанию" else False
-            df = df.sort_values(by="date", ascending=ascending)
-            print("Отсортировано.")
+            reverse = order_type == "убыванию"
+            df = pd.DataFrame(sort_by_date(df.to_dict(orient="records"), reverse=reverse))
     else:
         print("Нет столбца даты, пропущен фильтр.")
 
