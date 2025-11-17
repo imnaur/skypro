@@ -24,7 +24,7 @@ def main():
     if client_answer == "1":
         file_path = os.path.join(DATA_DIR, "operations.json")
         print("Для обработки выбран JSON-файл.")
-        dict_oper = read_json()
+        dict_oper = read_json(file_path)
         df = pd.DataFrame(dict_oper)
 
     elif client_answer == "2":

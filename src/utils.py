@@ -27,19 +27,8 @@ file_handler.setFormatter(formatter)
 json_logger.addHandler(file_handler)
 
 
-# Скачивание JSON файла с URL
-url = "https://drive.google.com/uc?export=download&id=1C0bUdTxUhck-7BoqXSR1wIEp33BH5YXy"
-response = requests.get(url)
-
-data = response.json()
-# Сохраняем JSON локально при помощи ссылки к файлу
-save_path = "/Users/imnaur/PycharmProjects/Skypro/data/operations.json"
-with open(save_path, "w", encoding="utf-8") as f:
-    json.dump(data, f, ensure_ascii=False, indent=4)
-
-
 # Читаем локально сохраненный JSON
-def read_json():
+def read_json(save_path):
     """Функция читает локально сохраненный файл JSON."""
     json_logger.info("Начало процесса чтения JSON файла")
 
@@ -67,5 +56,6 @@ def read_json():
 
 
 if __name__ == "__main__":
-    res = read_json()
+    save_path = "/Users/imnaur/PycharmProjects/Skypro/data/operations.json"
+    res = read_json(save_path)
     print(res)

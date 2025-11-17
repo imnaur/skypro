@@ -1,6 +1,5 @@
 import pandas as pd
-from src.widget import get_date
-from src.masks import get_mask_card_number, get_mask_account
+from src.widget import get_date, mask_account_card
 
 def filter_by_state(list_of_states: list[dict], state: str = "EXECUTED") -> list[dict]:
     """Функция, которая фильтрует список словарей по значению ключа 'state'."""
@@ -19,37 +18,28 @@ def sort_by_date(data: list[dict], reverse=False) -> list[dict]:
     return sorted_date
 
 
-
 def format_transaction(row):
     """Форматирует транзакцию для всех типов файлов (JSON, CSV, XLSX)."""
 
     # Дата
-    data_str = row["date"] if "date" in row else ""
+    date_str = row.get("date", "")
     try:
-        date_formatted = get_date(str(data_str))
+        date_formatted = get_date(str(date_str))
     except ValueError:
-        date_formatted = data_str
+        date_formatted = date_str
 
     # from/to
-    from_acc = ""
-    if "from" in row and pd.notnull(row["from"]):
-        from_number = "".join(filter(str.isdigit, str(row["from"])))
-        if len(from_number) == 16:
-            from_acc = get_mask_card_number(from_number)
-        elif len(from_number) == 20:
-            from_acc = get_mask_account(from_number)
-        else:
-            from_acc = row["from"]
+    from_acc = str(row.get("from", ""))
+    to_acc = str(row.get("to", ""))
 
-    to_acc = ""
-    if "to" in row and pd.notnull(row["to"]):
-        to_number = "".join(filter(str.isdigit, str(row["to"])))
-        if len(to_number) == 16:
-            to_acc = get_mask_card_number(to_number)
-        elif len(to_number) == 20:
-            to_acc = get_mask_account(to_number)
-        else:
-            to_acc = row["to"]
+    if from_acc:
+        digits = "".join(filter(str.isdigit, from_acc))
+        if len(digits) >= 16:
+            from_acc = from_acc.replace(digits, mask_account_card(digits))
+    if to_acc:
+        digits = "".join(filter(str.isdigit, to_acc))
+        if len(digits) >= 20:
+            to_acc = to_acc.replace(digits, mask_account_card(digits))
 
     # Сумма и валюта
     amount = ""
