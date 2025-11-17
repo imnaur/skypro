@@ -1,5 +1,5 @@
-import pandas as pd
 from src.widget import get_date, mask_account_card
+
 
 def filter_by_state(list_of_states: list[dict], state: str = "EXECUTED") -> list[dict]:
     """Функция, которая фильтрует список словарей по значению ключа 'state'."""
