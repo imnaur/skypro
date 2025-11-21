@@ -1,4 +1,5 @@
 import os
+from ctypes import c_double
 
 import pandas as pd
 
@@ -10,6 +11,7 @@ def reading_csv(file_path: str, sep=";") -> list[dict]:
         return []
     df_csv = pd.read_csv(file_path, sep=sep)
     return df_csv.to_dict(orient="records")
+
 
 
 def reading_excel(file_path: str) -> list[dict]:
@@ -30,3 +32,6 @@ if __name__ == "__main__":
 
     print(csv_data)
     print(excel_data)
+
+
+

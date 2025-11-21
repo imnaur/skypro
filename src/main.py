@@ -1,11 +1,11 @@
 import os
-
 import pandas as pd
-
-from src.processing import filter_by_state, format_transaction, sort_by_date
-from src.reading_files import reading_csv, reading_excel
+from src.widget import get_date
+from src.masks import get_mask_card_number, get_mask_account
 from src.search_processing import search_process
 from src.utils import read_json
+from src.reading_files import reading_csv, reading_excel
+from src.processing import filter_by_state, sort_by_date, format_transaction
 
 
 def main():
@@ -44,14 +44,10 @@ def main():
         return None
 
     while True:
-        filter_answer = (
-            input(
-                "Введите статус, по которому необходимо выполнить фильтрацию.\n"
-                "Доступные статусы: EXECUTED, CANCELED, PENDING\n"
-            )
-            .strip()
-            .upper()
-        )
+        filter_answer = input(
+            "Введите статус, по которому необходимо выполнить фильтрацию.\n"
+            "Доступные статусы: EXECUTED, CANCELED, PENDING\n"
+        ).strip().upper()
 
         if filter_answer in ["EXECUTED", "CANCELED", "PENDING"]:
             df = pd.DataFrame(filter_by_state(df.to_dict(orient="records"), filter_answer))

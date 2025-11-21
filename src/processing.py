@@ -1,5 +1,5 @@
+import pandas as pd
 from src.widget import get_date, mask_account_card
-
 
 def filter_by_state(list_of_states: list[dict], state: str = "EXECUTED") -> list[dict]:
     """Функция, которая фильтрует список словарей по значению ключа 'state'."""
@@ -28,17 +28,30 @@ def format_transaction(row):
     except ValueError:
         date_formatted = date_str
 
-    # from/to
-    from_acc = str(row.get("from", ""))
-    to_acc = str(row.get("to", ""))
+    # получаем значения
+    from_acc = row.get("from")
+    to_acc = row.get("to")
 
+    # приводим к строке и очищаем
+    from_acc = str(from_acc).strip() if from_acc else ""
+    to_acc = str(to_acc).strip() if to_acc else ""
+
+    # устраняем NaN / None
+    if from_acc.lower() == "nan":
+        from_acc = ""
+    if to_acc.lower() == "nan":
+        to_acc = ""
+
+    # маскирование from_acc
     if from_acc:
-        digits = "".join(filter(str.isdigit, from_acc))
-        if len(digits) >= 16:
+        digits = "".join(ch for ch in from_acc if ch.isdigit())
+        if len(digits) in (16, 20):
             from_acc = from_acc.replace(digits, mask_account_card(digits))
+
+    # маскирование to_acc
     if to_acc:
-        digits = "".join(filter(str.isdigit, to_acc))
-        if len(digits) >= 20:
+        digits = "".join(ch for ch in to_acc if ch.isdigit())
+        if len(digits) in (16, 20):
             to_acc = to_acc.replace(digits, mask_account_card(digits))
 
     # Сумма и валюта
